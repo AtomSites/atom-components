@@ -13,7 +13,7 @@ import (
 func TestContactForm(t *testing.T) {
 	fields := contact.DefaultFields()
 	var buf bytes.Buffer
-	err := contact.ContactForm("/contact", fields, contact.FormData{}).Render(context.Background(), &buf)
+	err := contact.ContactForm("/contact", fields, contact.FormData{}, "").Render(context.Background(), &buf)
 	if err != nil {
 		t.Fatalf("render error: %v", err)
 	}
@@ -57,7 +57,7 @@ func TestContactFormWithData(t *testing.T) {
 		Errors: map[string]string{"email": "Invalid email"},
 	}
 	var buf bytes.Buffer
-	err := contact.ContactForm("/send", fields, data).Render(context.Background(), &buf)
+	err := contact.ContactForm("/send", fields, data, "").Render(context.Background(), &buf)
 	if err != nil {
 		t.Fatalf("render error: %v", err)
 	}
@@ -83,7 +83,7 @@ func TestContactFormCustomFields(t *testing.T) {
 		{Name: "body", Label: "Body", Type: "textarea", Placeholder: "Write here...", Rows: 10},
 	}
 	var buf bytes.Buffer
-	err := contact.ContactForm("/custom", fields, contact.FormData{}).Render(context.Background(), &buf)
+	err := contact.ContactForm("/custom", fields, contact.FormData{}, "").Render(context.Background(), &buf)
 	if err != nil {
 		t.Fatalf("render error: %v", err)
 	}
@@ -156,5 +156,127 @@ func TestValidateRequired(t *testing.T) {
 	}
 	if !contact.ValidateRequired(fields, &data2) {
 		t.Error("expected validation to pass")
+	}
+}
+
+func TestContactFormWithCSRFToken(t *testing.T) {
+	fields := contact.DefaultFields()
+	var buf bytes.Buffer
+	err := contact.ContactForm("/contact", fields, contact.FormData{}, "test-token-123").Render(context.Background(), &buf)
+	if err != nil {
+		t.Fatalf("render error: %v", err)
+	}
+	html := buf.String()
+
+	if !strings.Contains(html, `name="csrf_token"`) {
+		t.Error("expected csrf_token hidden input")
+	}
+	if !strings.Contains(html, `value="test-token-123"`) {
+		t.Error("expected csrf token value")
+	}
+	if !strings.Contains(html, `type="hidden"`) {
+		t.Error("expected hidden input type")
+	}
+}
+
+func TestContactFormWithoutCSRFToken(t *testing.T) {
+	fields := contact.DefaultFields()
+	var buf bytes.Buffer
+	err := contact.ContactForm("/contact", fields, contact.FormData{}, "").Render(context.Background(), &buf)
+	if err != nil {
+		t.Fatalf("render error: %v", err)
+	}
+	html := buf.String()
+
+	if strings.Contains(html, `name="csrf_token"`) {
+		t.Error("csrf_token should not be rendered when token is empty")
+	}
+}
+
+func TestValidateFormatInvalidEmail(t *testing.T) {
+	fields := []contact.Field{
+		{Name: "email", Label: "Email", Type: "email", Required: true},
+	}
+	data := contact.FormData{
+		Values: map[string]string{"email": "not-an-email"},
+		Errors: make(map[string]string),
+	}
+
+	valid := contact.ValidateFormat(fields, &data, 0)
+	if valid {
+		t.Error("expected validation to fail for invalid email")
+	}
+	if data.Errors["email"] == "" {
+		t.Error("expected error for invalid email")
+	}
+}
+
+func TestValidateFormatValidEmail(t *testing.T) {
+	fields := []contact.Field{
+		{Name: "email", Label: "Email", Type: "email", Required: true},
+	}
+	data := contact.FormData{
+		Values: map[string]string{"email": "alice@example.com"},
+		Errors: make(map[string]string),
+	}
+
+	valid := contact.ValidateFormat(fields, &data, 0)
+	if !valid {
+		t.Error("expected validation to pass for valid email")
+	}
+}
+
+func TestValidateFormatMaxLength(t *testing.T) {
+	fields := []contact.Field{
+		{Name: "name", Label: "Name", Type: "text", Required: true},
+	}
+	data := contact.FormData{
+		Values: map[string]string{"name": strings.Repeat("a", 11)},
+		Errors: make(map[string]string),
+	}
+
+	valid := contact.ValidateFormat(fields, &data, 10)
+	if valid {
+		t.Error("expected validation to fail for too-long input")
+	}
+	if data.Errors["name"] == "" {
+		t.Error("expected error for too-long name")
+	}
+
+	// Within limit
+	data2 := contact.FormData{
+		Values: map[string]string{"name": strings.Repeat("a", 10)},
+		Errors: make(map[string]string),
+	}
+	if !contact.ValidateFormat(fields, &data2, 10) {
+		t.Error("expected validation to pass for name at limit")
+	}
+}
+
+func TestSanitizeNewlines(t *testing.T) {
+	fields := []contact.Field{
+		{Name: "name", Label: "Name", Type: "text"},
+		{Name: "subject", Label: "Subject", Type: "text"},
+		{Name: "message", Label: "Message", Type: "textarea"},
+	}
+	data := contact.FormData{
+		Values: map[string]string{
+			"name":    "Alice\r\nSmith",
+			"subject": "Hello\nWorld",
+			"message": "Line1\r\nLine2\nLine3",
+		},
+		Errors: make(map[string]string),
+	}
+
+	contact.SanitizeNewlines(fields, &data)
+
+	if data.Values["name"] != "AliceSmith" {
+		t.Errorf("expected newlines stripped from name, got %q", data.Values["name"])
+	}
+	if data.Values["subject"] != "HelloWorld" {
+		t.Errorf("expected newlines stripped from subject, got %q", data.Values["subject"])
+	}
+	if data.Values["message"] != "Line1\r\nLine2\nLine3" {
+		t.Errorf("expected newlines preserved in textarea, got %q", data.Values["message"])
 	}
 }

@@ -32,8 +32,11 @@ func (d FormData) valFor(field string) string {
 	return d.Values[field]
 }
 
-templ ContactForm(action string, fields []Field, data FormData) {
+templ ContactForm(action string, fields []Field, data FormData, csrfToken string) {
 	<form class="ac-contact-form" method="POST" action={ templ.SafeURL(action) }>
+		if csrfToken != "" {
+			<input type="hidden" name="csrf_token" value={ csrfToken }/>
+		}
 		for _, f := range fields {
 			if f.Type == "textarea" {
 				@form.TextArea("ac-contact-"+f.Name, f.Name, f.Label, f.Placeholder,

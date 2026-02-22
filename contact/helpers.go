@@ -2,7 +2,9 @@ package contact
 
 import (
 	"net/http"
+	"net/mail"
 	"strings"
+	"unicode/utf8"
 )
 
 // DefaultFields returns the standard Name, Email, Subject, Message fields.
@@ -37,6 +39,48 @@ func ValidateRequired(fields []Field, data *FormData) bool {
 	for _, f := range fields {
 		if f.Required && data.Values[f.Name] == "" {
 			data.Errors[f.Name] = f.Label + " is required"
+			valid = false
+		}
+	}
+	return valid
+}
+
+// SanitizeNewlines strips \r and \n from all non-textarea field values.
+// This prevents email header injection. Call after ParseForm, before validation.
+func SanitizeNewlines(fields []Field, data *FormData) {
+	for _, f := range fields {
+		if f.Type == "textarea" {
+			continue
+		}
+		v := data.Values[f.Name]
+		v = strings.ReplaceAll(v, "\r", "")
+		v = strings.ReplaceAll(v, "\n", "")
+		data.Values[f.Name] = v
+	}
+}
+
+// ValidateFormat checks email format and maximum field length.
+// Email fields are validated with net/mail.ParseAddress (RFC 5322).
+// All non-empty fields are checked against maxLen runes (0 = no limit).
+// Errors are appended to data.Errors. Returns true if all checks pass.
+func ValidateFormat(fields []Field, data *FormData, maxLen int) bool {
+	if data.Errors == nil {
+		data.Errors = make(map[string]string)
+	}
+	valid := true
+	for _, f := range fields {
+		v := data.Values[f.Name]
+		if v == "" {
+			continue
+		}
+		if f.Type == "email" {
+			if _, err := mail.ParseAddress(v); err != nil {
+				data.Errors[f.Name] = "Please enter a valid email address"
+				valid = false
+			}
+		}
+		if maxLen > 0 && utf8.RuneCountInString(v) > maxLen {
+			data.Errors[f.Name] = f.Label + " is too long"
 			valid = false
 		}
 	}
