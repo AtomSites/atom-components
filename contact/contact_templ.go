@@ -10,12 +10,20 @@ import templruntime "github.com/a-h/templ/runtime"
 
 import "github.com/AtomSites/atom-components/form"
 
+// Field describes a single form field.
+type Field struct {
+	Name        string // HTML name attr + map key in Values/Errors
+	Label       string // Human-visible label
+	Type        string // "text", "email", or "textarea"
+	Placeholder string
+	Rows        int  // textarea only; 0 defaults to 5
+	Required    bool // enforced by ValidateRequired()
+}
+
+// FormData holds submitted values and validation errors, both keyed by Field.Name.
 type FormData struct {
-	Name    string
-	Email   string
-	Subject string
-	Message string
-	Errors  map[string]string
+	Values map[string]string
+	Errors map[string]string
 }
 
 func (d FormData) errFor(field string) string {
@@ -25,7 +33,14 @@ func (d FormData) errFor(field string) string {
 	return d.Errors[field]
 }
 
-func ContactForm(action string, data FormData) templ.Component {
+func (d FormData) valFor(field string) string {
+	if d.Values == nil {
+		return ""
+	}
+	return d.Values[field]
+}
+
+func ContactForm(action string, fields []Field, data FormData) templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		if templ_7745c5c3_CtxErr := ctx.Err(); templ_7745c5c3_CtxErr != nil {
@@ -53,37 +68,32 @@ func ContactForm(action string, data FormData) templ.Component {
 		var templ_7745c5c3_Var2 templ.SafeURL
 		templ_7745c5c3_Var2, templ_7745c5c3_Err = templ.JoinURLErrs(templ.SafeURL(action))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact/contact.templ`, Line: 21, Col: 75}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `contact/contact.templ`, Line: 36, Col: 75}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var2))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\"><div class=\"ac-form-row\">")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 2, "\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = form.TextInput("ac-contact-name", "name", "Name", "text", "Your name", data.Name, data.errFor("name")).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
+		for _, f := range fields {
+			if f.Type == "textarea" {
+				templ_7745c5c3_Err = form.TextArea("ac-contact-"+f.Name, f.Name, f.Label, f.Placeholder,
+					data.valFor(f.Name), textareaRows(f.Rows), data.errFor(f.Name)).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			} else {
+				templ_7745c5c3_Err = form.TextInput("ac-contact-"+f.Name, f.Name, f.Label, f.Type,
+					f.Placeholder, data.valFor(f.Name), data.errFor(f.Name)).Render(ctx, templ_7745c5c3_Buffer)
+				if templ_7745c5c3_Err != nil {
+					return templ_7745c5c3_Err
+				}
+			}
 		}
-		templ_7745c5c3_Err = form.TextInput("ac-contact-email", "email", "Email", "email", "you@example.com", data.Email, data.errFor("email")).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "</div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = form.TextInput("ac-contact-subject", "subject", "Subject", "text", "What is this about?", data.Subject, data.errFor("subject")).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = form.TextArea("ac-contact-message", "message", "Message", "Your message...", data.Message, 5, data.errFor("message")).Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 4, "<button type=\"submit\" class=\"ac-contact-submit\">Send Message</button></form>")
+		templ_7745c5c3_Err = templruntime.WriteString(templ_7745c5c3_Buffer, 3, "<button type=\"submit\" class=\"ac-contact-submit\">Send Message</button></form>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

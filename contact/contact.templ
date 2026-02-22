@@ -2,12 +2,20 @@ package contact
 
 import "github.com/AtomSites/atom-components/form"
 
+// Field describes a single form field.
+type Field struct {
+	Name        string // HTML name attr + map key in Values/Errors
+	Label       string // Human-visible label
+	Type        string // "text", "email", or "textarea"
+	Placeholder string
+	Rows        int  // textarea only; 0 defaults to 5
+	Required    bool // enforced by ValidateRequired()
+}
+
+// FormData holds submitted values and validation errors, both keyed by Field.Name.
 type FormData struct {
-	Name    string
-	Email   string
-	Subject string
-	Message string
-	Errors  map[string]string
+	Values map[string]string
+	Errors map[string]string
 }
 
 func (d FormData) errFor(field string) string {
@@ -17,14 +25,24 @@ func (d FormData) errFor(field string) string {
 	return d.Errors[field]
 }
 
-templ ContactForm(action string, data FormData) {
+func (d FormData) valFor(field string) string {
+	if d.Values == nil {
+		return ""
+	}
+	return d.Values[field]
+}
+
+templ ContactForm(action string, fields []Field, data FormData) {
 	<form class="ac-contact-form" method="POST" action={ templ.SafeURL(action) }>
-		<div class="ac-form-row">
-			@form.TextInput("ac-contact-name", "name", "Name", "text", "Your name", data.Name, data.errFor("name"))
-			@form.TextInput("ac-contact-email", "email", "Email", "email", "you@example.com", data.Email, data.errFor("email"))
-		</div>
-		@form.TextInput("ac-contact-subject", "subject", "Subject", "text", "What is this about?", data.Subject, data.errFor("subject"))
-		@form.TextArea("ac-contact-message", "message", "Message", "Your message...", data.Message, 5, data.errFor("message"))
+		for _, f := range fields {
+			if f.Type == "textarea" {
+				@form.TextArea("ac-contact-"+f.Name, f.Name, f.Label, f.Placeholder,
+					data.valFor(f.Name), textareaRows(f.Rows), data.errFor(f.Name))
+			} else {
+				@form.TextInput("ac-contact-"+f.Name, f.Name, f.Label, f.Type,
+					f.Placeholder, data.valFor(f.Name), data.errFor(f.Name))
+			}
+		}
 		<button type="submit" class="ac-contact-submit">Send Message</button>
 	</form>
 }
