@@ -1,0 +1,57 @@
+package card
+
+type PricingTier struct {
+	Name        string
+	Price       string
+	Currency    string
+	Period      string
+	Features    []string
+	CTAText     string
+	CTALink     string
+	Highlighted bool
+	Badge       string
+}
+
+templ FeatureCard(title, description string) {
+	<div class="ac-feature-card">
+		<div class="ac-feature-card-icon">
+			{ children... }
+		</div>
+		<h3 class="ac-feature-card-title">{ title }</h3>
+		<p class="ac-feature-card-desc">{ description }</p>
+	</div>
+}
+
+templ PricingCard(tier PricingTier) {
+	<div class={ "ac-pricing-card", templ.KV("ac-pricing-card-highlighted", tier.Highlighted) }>
+		if tier.Badge != "" {
+			<span class="ac-pricing-badge">{ tier.Badge }</span>
+		}
+		<div class="ac-pricing-tier">{ tier.Name }</div>
+		<div class="ac-pricing-price">
+			<span class="ac-pricing-price-currency">{ tier.Currency }</span>{ tier.Price }
+		</div>
+		<div class="ac-pricing-period">{ tier.Period }</div>
+		<ul class="ac-pricing-features">
+			for _, feature := range tier.Features {
+				<li>{ feature }</li>
+			}
+		</ul>
+		<a href={ templ.SafeURL(tier.CTALink) } class="ac-pricing-cta">{ tier.CTAText }</a>
+	</div>
+}
+
+templ TestimonialCard(quote, name, role, avatarURL string) {
+	<div class="ac-testimonial-card">
+		<p class="ac-testimonial-quote">{ quote }</p>
+		<div class="ac-testimonial-author">
+			if avatarURL != "" {
+				<img src={ avatarURL } alt={ name } class="ac-testimonial-avatar"/>
+			}
+			<div>
+				<div class="ac-testimonial-name">{ name }</div>
+				<div class="ac-testimonial-role">{ role }</div>
+			</div>
+		</div>
+	</div>
+}

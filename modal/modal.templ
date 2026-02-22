@@ -1,0 +1,32 @@
+package modal
+
+templ Modal(id string, title string) {
+	<div id={ id } class="ac-modal-overlay">
+		<div class="ac-modal" role="dialog" aria-labelledby={ id + "-title" }>
+			<div class="ac-modal-header">
+				<h2 id={ id + "-title" } class="ac-modal-title">{ title }</h2>
+				<button class="ac-modal-close" data-modal-close aria-label="Close">&times;</button>
+			</div>
+			<div class="ac-modal-body">
+				{ children... }
+			</div>
+		</div>
+	</div>
+}
+
+templ ModalWithFooter(id string, title string, footer templ.Component) {
+	<div id={ id } class="ac-modal-overlay">
+		<div class="ac-modal" role="dialog" aria-labelledby={ id + "-title" }>
+			<div class="ac-modal-header">
+				<h2 id={ id + "-title" } class="ac-modal-title">{ title }</h2>
+				<button class="ac-modal-close" data-modal-close aria-label="Close">&times;</button>
+			</div>
+			<div class="ac-modal-body">
+				{ children... }
+			</div>
+			<div class="ac-modal-footer">
+				@footer
+			</div>
+		</div>
+	</div>
+}

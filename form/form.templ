@@ -1,0 +1,62 @@
+package form
+
+type SelectOption struct {
+	Value    string
+	Label    string
+	Selected bool
+}
+
+templ TextInput(id, name, label, inputType, placeholder, value, errMsg string) {
+	<div class="ac-form-group">
+		<label class="ac-label" for={ id }>{ label }</label>
+		<input
+			type={ inputType }
+			id={ id }
+			name={ name }
+			class={ "ac-input", templ.KV("ac-input-error", errMsg != "") }
+			placeholder={ placeholder }
+			value={ value }
+		/>
+		if errMsg != "" {
+			<span class="ac-error-text">{ errMsg }</span>
+		}
+	</div>
+}
+
+templ TextArea(id, name, label, placeholder, value string, rows int, errMsg string) {
+	<div class="ac-form-group">
+		<label class="ac-label" for={ id }>{ label }</label>
+		<textarea
+			id={ id }
+			name={ name }
+			class={ "ac-textarea", templ.KV("ac-textarea-error", errMsg != "") }
+			placeholder={ placeholder }
+			rows={ templ.EscapeString(intToString(rows)) }
+		>{ value }</textarea>
+		if errMsg != "" {
+			<span class="ac-error-text">{ errMsg }</span>
+		}
+	</div>
+}
+
+templ Select(id, name, label string, options []SelectOption, errMsg string) {
+	<div class="ac-form-group">
+		<label class="ac-label" for={ id }>{ label }</label>
+		<select
+			id={ id }
+			name={ name }
+			class={ "ac-select", templ.KV("ac-select-error", errMsg != "") }
+		>
+			for _, opt := range options {
+				if opt.Selected {
+					<option value={ opt.Value } selected>{ opt.Label }</option>
+				} else {
+					<option value={ opt.Value }>{ opt.Label }</option>
+				}
+			}
+		</select>
+		if errMsg != "" {
+			<span class="ac-error-text">{ errMsg }</span>
+		}
+	</div>
+}

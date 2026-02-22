@@ -1,0 +1,529 @@
+/* ============================================================
+   Atom Components — ac-* prefixed styles
+   All colors/effects reference the host project's CSS variables.
+   ============================================================ */
+
+/* ============ FORM INPUTS ============ */
+.ac-form-group {
+  margin-bottom: 20px;
+}
+
+.ac-label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-white);
+  margin-bottom: 6px;
+}
+
+.ac-input,
+.ac-textarea,
+.ac-select {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 10px;
+  color: var(--text-white);
+  font-family: inherit;
+  font-size: 1rem;
+  line-height: 1.5;
+  transition: border-color 0.3s, background 0.3s, box-shadow 0.3s;
+  outline: none;
+}
+
+.ac-input:focus,
+.ac-textarea:focus,
+.ac-select:focus {
+  border-color: var(--accent);
+  background: var(--glass-bg-hover);
+  box-shadow: 0 0 0 3px rgba(184, 150, 62, 0.15);
+}
+
+.ac-input::placeholder,
+.ac-textarea::placeholder {
+  color: var(--text-body);
+  opacity: 0.6;
+}
+
+.ac-textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.ac-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='%239CA3AF'%3E%3Cpath d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.ac-error-text {
+  display: block;
+  font-size: 0.85rem;
+  color: #ef4444;
+  margin-top: 4px;
+}
+
+.ac-input-error,
+.ac-textarea-error,
+.ac-select-error {
+  border-color: #ef4444;
+}
+
+/* ============ CONTACT FORM ============ */
+.ac-contact-form {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 560px;
+}
+
+.ac-contact-form .ac-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.ac-contact-submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  padding: 14px 32px;
+  background: rgba(184, 150, 62, 0.15);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  color: var(--accent-light);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1rem;
+  border: 1px solid rgba(184, 150, 62, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+
+.ac-contact-submit:hover {
+  background: rgba(184, 150, 62, 0.25);
+  border-color: rgba(184, 150, 62, 0.5);
+  box-shadow: 0 0 30px rgba(184, 150, 62, 0.2);
+  transform: translateY(-1px);
+}
+
+/* ============ MODAL ============ */
+.ac-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.ac-modal {
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  width: 90%;
+  max-width: 520px;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5);
+}
+
+.ac-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-card);
+}
+
+.ac-modal-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-white);
+  margin: 0;
+}
+
+.ac-modal-close {
+  background: none;
+  border: none;
+  color: var(--text-body);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.ac-modal-close:hover {
+  color: var(--text-white);
+}
+
+.ac-modal-body {
+  padding: 24px;
+  color: var(--text-body);
+  line-height: 1.6;
+}
+
+.ac-modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border-card);
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* ============ TOAST ============ */
+.ac-toast-container {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.ac-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--glass-border);
+  color: var(--text-white);
+  font-size: 0.95rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  pointer-events: auto;
+  animation: ac-toast-in 0.3s ease-out;
+}
+
+.ac-toast-exit {
+  animation: ac-toast-out 0.3s ease-in forwards;
+}
+
+@keyframes ac-toast-in {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes ac-toast-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+}
+
+.ac-toast-success {
+  border-left: 3px solid #22c55e;
+}
+
+.ac-toast-error {
+  border-left: 3px solid #ef4444;
+}
+
+.ac-toast-warning {
+  border-left: 3px solid #f59e0b;
+}
+
+.ac-toast-info {
+  border-left: 3px solid var(--accent);
+}
+
+.ac-toast-message {
+  flex: 1;
+}
+
+.ac-toast-close {
+  background: none;
+  border: none;
+  color: var(--text-body);
+  font-size: 1.25rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.ac-toast-close:hover {
+  color: var(--text-white);
+}
+
+/* ============ CARDS ============ */
+
+/* Feature Card */
+.ac-feature-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: 16px;
+  padding: 32px;
+  transition: background 0.3s, border-color 0.3s, transform 0.2s;
+}
+
+.ac-feature-card:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  transform: translateY(-2px);
+}
+
+.ac-feature-card-icon {
+  margin-bottom: 16px;
+  color: var(--accent);
+  font-size: 2rem;
+}
+
+.ac-feature-card-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--text-white);
+  margin-bottom: 8px;
+}
+
+.ac-feature-card-desc {
+  color: var(--text-body);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Pricing Card */
+.ac-pricing-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: 16px;
+  padding: 36px 32px;
+  text-align: center;
+  transition: background 0.3s, border-color 0.3s, transform 0.2s;
+}
+
+.ac-pricing-card:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+  transform: translateY(-2px);
+}
+
+.ac-pricing-card-highlighted {
+  border-color: var(--accent);
+  position: relative;
+}
+
+.ac-pricing-badge {
+  position: absolute;
+  top: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: var(--bg-dark, #0D0D0D);
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 16px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ac-pricing-tier {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-body);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+}
+
+.ac-pricing-price {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--text-white);
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.ac-pricing-price-currency {
+  font-size: 1.5rem;
+  vertical-align: super;
+}
+
+.ac-pricing-period {
+  font-size: 0.9rem;
+  color: var(--text-body);
+  margin-bottom: 24px;
+}
+
+.ac-pricing-features {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 28px;
+  text-align: left;
+}
+
+.ac-pricing-features li {
+  padding: 8px 0;
+  color: var(--text-body);
+  font-size: 0.95rem;
+  border-bottom: 1px solid var(--border-card);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ac-pricing-features li::before {
+  content: "✓";
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.ac-pricing-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 14px 32px;
+  background: rgba(184, 150, 62, 0.15);
+  color: var(--accent-light);
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 1rem;
+  border: 1px solid rgba(184, 150, 62, 0.3);
+  border-radius: 12px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.3s, border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+}
+
+.ac-pricing-cta:hover {
+  background: rgba(184, 150, 62, 0.25);
+  border-color: rgba(184, 150, 62, 0.5);
+  box-shadow: 0 0 30px rgba(184, 150, 62, 0.2);
+  transform: translateY(-1px);
+}
+
+/* Testimonial Card */
+.ac-testimonial-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-radius: 16px;
+  padding: 32px;
+  transition: background 0.3s, border-color 0.3s;
+}
+
+.ac-testimonial-card:hover {
+  background: var(--glass-bg-hover);
+  border-color: var(--glass-border-hover);
+}
+
+.ac-testimonial-quote {
+  font-size: 1rem;
+  color: var(--text-body);
+  line-height: 1.7;
+  margin-bottom: 20px;
+  font-style: italic;
+  position: relative;
+  padding-left: 20px;
+  border-left: 2px solid var(--accent);
+}
+
+.ac-testimonial-author {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ac-testimonial-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--border-subtle);
+}
+
+.ac-testimonial-name {
+  font-weight: 700;
+  color: var(--text-white);
+  font-size: 0.95rem;
+}
+
+.ac-testimonial-role {
+  font-size: 0.85rem;
+  color: var(--text-body);
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 768px) {
+  .ac-contact-form .ac-form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .ac-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .ac-toast-container {
+    top: 12px;
+    right: 12px;
+    left: 12px;
+  }
+
+  .ac-toast {
+    font-size: 0.9rem;
+  }
+
+  .ac-pricing-price {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .ac-contact-form {
+    padding: 20px;
+  }
+
+  .ac-modal-header {
+    padding: 16px 20px;
+  }
+
+  .ac-modal-body {
+    padding: 20px;
+  }
+
+  .ac-modal-footer {
+    padding: 12px 20px;
+    flex-direction: column;
+  }
+
+  .ac-feature-card,
+  .ac-pricing-card,
+  .ac-testimonial-card {
+    padding: 24px;
+  }
+}

@@ -1,0 +1,21 @@
+package toast
+
+type Level string
+
+const (
+	Success Level = "success"
+	Error   Level = "error"
+	Warning Level = "warning"
+	Info    Level = "info"
+)
+
+templ Container() {
+	<div class="ac-toast-container"></div>
+}
+
+templ Toast(message string, level Level) {
+	<div class={ "ac-toast", "ac-toast-" + string(level) } role="alert">
+		<span class="ac-toast-message">{ message }</span>
+		<button class="ac-toast-close" data-toast-close aria-label="Dismiss">&times;</button>
+	</div>
+}
