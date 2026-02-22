@@ -1,0 +1,82 @@
+package datepicker
+
+type DatePickerConfig struct {
+	ID          string // HTML id prefix (required)
+	Name        string // Hidden input name for form submission
+	Label       string // Label text
+	Placeholder string // Placeholder (defaults to "Select a date...")
+	Value       string // Pre-selected date, YYYY-MM-DD format
+	ErrMsg      string // Validation error message
+	MinYear     int    // Earliest year (0 = currentYear - 100)
+	MaxYear     int    // Latest year (0 = currentYear + 20)
+}
+
+templ DatePicker(cfg DatePickerConfig) {
+	<div
+		id={ cfg.ID }
+		class="ac-form-group ac-datepicker"
+		data-ac-datepicker
+		data-ac-datepicker-min-year={ intToString(resolveMinYear(cfg.MinYear)) }
+		data-ac-datepicker-max-year={ intToString(resolveMaxYear(cfg.MaxYear)) }
+	>
+		if cfg.Label != "" {
+			<label class="ac-label" for={ cfg.ID + "-trigger" }>{ cfg.Label }</label>
+		}
+		<input
+			type="text"
+			id={ cfg.ID + "-trigger" }
+			class={ "ac-input ac-datepicker-trigger", templ.KV("ac-input-error", cfg.ErrMsg != "") }
+			placeholder={ resolvePlaceholder(cfg.Placeholder) }
+			value={ formatDisplayDate(cfg.Value) }
+			readonly
+			aria-haspopup="dialog"
+			aria-expanded="false"
+			aria-controls={ cfg.ID + "-modal" }
+			data-ac-datepicker-trigger
+		/>
+		<input
+			type="hidden"
+			id={ cfg.ID + "-value" }
+			name={ cfg.Name }
+			value={ cfg.Value }
+			data-ac-datepicker-value
+		/>
+		if cfg.ErrMsg != "" {
+			<span class="ac-error-text">{ cfg.ErrMsg }</span>
+		}
+		<div
+			id={ cfg.ID + "-modal" }
+			class="ac-modal-overlay ac-datepicker-overlay"
+			role="dialog"
+			aria-label={ cfg.Label + " date picker" }
+		>
+			<div class="ac-modal ac-datepicker-modal">
+				<div class="ac-datepicker-header">
+					<button
+						type="button"
+						class="ac-datepicker-back"
+						data-ac-datepicker-back
+						aria-label="Go back"
+					>
+						&#8249;
+					</button>
+					<span class="ac-datepicker-title" data-ac-datepicker-title>Select Year</span>
+					<button
+						type="button"
+						class="ac-modal-close"
+						data-ac-datepicker-close
+						aria-label="Close"
+					>
+						&times;
+					</button>
+				</div>
+				<div class="ac-datepicker-body" data-ac-datepicker-body></div>
+				<div class="ac-datepicker-footer">
+					<button type="button" class="ac-datepicker-btn" data-ac-datepicker-today>Today</button>
+					<button type="button" class="ac-datepicker-btn" data-ac-datepicker-cancel>Cancel</button>
+					<button type="button" class="ac-datepicker-btn ac-datepicker-btn-confirm" data-ac-datepicker-confirm>Confirm</button>
+				</div>
+			</div>
+		</div>
+	</div>
+}
